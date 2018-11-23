@@ -18,30 +18,26 @@ namespace Lesson6
     partial class Tasks
     {
 
-        static List<Delegate> delegatesList = new List<Delegate>();
+        static List<Func<double, double>> delegatesList = new List<Func<double, double>>();
 
         static void delegatesListInit()
         {
-            delegatesList.Add(new Delegate (double x) { return (x * x) - (50 * x) + 10; } );
+
+            Func<double, double> F = delegate (double x) { return (x * x) - (50 * x) + 10; };
+            Func<double, double> SinTriple = delegate (double x) { return Math.Pow(Math.Sin(x * Math.PI / 180), 3); };
+
+            delegatesList.Add(F);
+            delegatesList.Add(SinTriple);
         }
 
-        public static double SinDouble(double x)
-        {
-            return Math.Pow(Math.Sin(x* Math.PI / 180), 2);
-        }
-
-        public static double F(double x)
-        {
-            return x * x - 50 * x + 10;
-        }
-        public static void SaveFunc(string fileName, double a, double b, double h)
+         public static void SaveFunc(string fileName, double a, double b, double h)
         {
             FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
             BinaryWriter bw = new BinaryWriter(fs);
             double x = a;
             while (x <= b)
             {
-                bw.Write(F(x));
+                bw.Write(delegatesList[1](x));
                 //bw.Write(SinDouble(x));
                 x += h;// x=x+h;
             }
@@ -74,12 +70,18 @@ namespace Lesson6
         {
             ServingStaticClass.PrintTaskWelcomeScreen("Вы выбрали задачу поиска минимума функции\n");
 
-            SaveFunc("data.bin", -100, 100, 0.5);
+            delegatesListInit();
+
+            SaveFunc("data.bin", -20, 20, 10);
             double[] Values = Load("data.bin", out double minValue);
 
-            ServingStaticClass.Print($"{minValue.ToString()}\n");
+            ServingStaticClass.Print($"\n{((decimal)minValue).ToString()}\n");
             ServingStaticClass.Print("");
 
+            //foreach (var item in Values)
+            //{
+            //    ServingStaticClass.Print(item.ToString());
+            //}
 
             ServingStaticClass.Pause("");
         }
