@@ -11,7 +11,7 @@ namespace Lesson6
             //задачи собраны в отдельный класс
             Tasks tasks = new Tasks();
 
-            MainMenu menu = new MainMenu(new string[] { "Вывод таблицы функций", "*", "*", "*", "*" });
+            MainMenu menu = new MainMenu(new string[] { "Вывод таблицы функций", "Поиск минимума функции", "*", "*", "*" });
 
             menu.Show();
 
