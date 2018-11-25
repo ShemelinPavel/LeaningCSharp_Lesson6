@@ -10,6 +10,7 @@ Shemelin Pavel
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using LeaningCSharp_ClassLibrary;
 
@@ -30,16 +31,16 @@ namespace Lesson6
             delegatesList.Add(SinTriple);
         }
 
-         public static void SaveFunc(string fileName, double a, double b, double h)
+         public static void SaveFunc(Func<double, double> d, string fileName, double a, double b, double h)
         {
+
             FileStream fs = new FileStream(fileName, FileMode.Create, FileAccess.Write);
             BinaryWriter bw = new BinaryWriter(fs);
             double x = a;
             while (x <= b)
             {
-                bw.Write(delegatesList[1](x));
-                //bw.Write(SinDouble(x));
-                x += h;// x=x+h;
+                bw.Write(d(x));
+                x += h;
             }
             bw.Close();
             fs.Close();
@@ -68,22 +69,52 @@ namespace Lesson6
 
         public static void Task2()
         {
-            ServingStaticClass.PrintTaskWelcomeScreen("Вы выбрали задачу поиска минимума функции\n");
 
             delegatesListInit();
 
-            SaveFunc("data.bin", -20, 20, 10);
-            double[] Values = Load("data.bin", out double minValue);
+            bool exitFlag = false;
+            short userChooseDelegate = -1;
 
-            ServingStaticClass.Print($"\n{((decimal)minValue).ToString()}\n");
-            ServingStaticClass.Print("");
+            while(!(exitFlag))
+            {
+                ServingStaticClass.PrintTaskWelcomeScreen("Вы выбрали задачу поиска минимума функции\n\nВыберите функцию для поиска минимума:\n1 - (x * x) - (50 * x) + 10\n2 - (Sin(x))^3\n0 - Выход из меню выбора\n");
 
-            //foreach (var item in Values)
-            //{
-            //    ServingStaticClass.Print(item.ToString());
-            //}
+                ConsoleKeyInfo userChose = Console.ReadKey(true);
 
-            ServingStaticClass.Pause("");
+                switch (userChose.Key)
+                {
+
+                    case ConsoleKey.D1:
+                    case ConsoleKey.NumPad1:
+                        userChooseDelegate = 0;
+                        break;
+                    case ConsoleKey.D2:
+                    case ConsoleKey.NumPad2:
+                        userChooseDelegate = 1;
+                        break;
+                    case ConsoleKey.D0:
+                    case ConsoleKey.NumPad0:
+                        userChooseDelegate = -1;
+                        exitFlag = true;
+                        break;
+                    default:
+                        userChooseDelegate = -1;
+                        break;
+                }
+
+                if (userChooseDelegate >= 0)
+                {
+
+                    double beginRange = Double.Parse(ServingStaticClass.MakeQuestion("начальное значение"));
+                    double endRange = Double.Parse(ServingStaticClass.MakeQuestion("конечное значение"));
+                    SaveFunc(delegatesList[userChooseDelegate], "data.bin", beginRange, endRange, 1);
+                    double[] Values = Load("data.bin", out double minValue);
+
+                    ServingStaticClass.Print($"Минимальное значение функции: {minValue.ToString()}\n");
+
+                    ServingStaticClass.Pause("");
+                }
+            }
         }
     }
 }
